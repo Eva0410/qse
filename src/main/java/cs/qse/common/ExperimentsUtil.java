@@ -4,6 +4,7 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import cs.Main;
 import cs.utils.ConfigManager;
 import cs.utils.FilesUtil;
 
@@ -12,11 +13,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExperimentsUtil {
-    
+
     public static HashMap<Double, List<Integer>> getSupportConfRange() {
-        HashMap<Double, List<Integer>> confSuppMap = new HashMap<>();
+        /*
         String fileAddress = ConfigManager.getProperty("config_dir_path") + "pruning/pruning_thresholds.csv";
         List<String[]> config = FilesUtil.readCsvAllDataOnceWithCustomSeparator(fileAddress, ',');
         config.remove(0); // remove the headers
@@ -26,11 +29,24 @@ public class ExperimentsUtil {
             List<Integer> supportValues = confSuppMap.computeIfAbsent(conf, k -> new ArrayList<>());
             supportValues.add(Integer.parseInt(row[1]));
             confSuppMap.put(conf, supportValues);
-        });
+        });*/
+
+        HashMap<Double, List<Integer>> confSuppMap = new HashMap<>();
+        String pruningThresholds = Main.pruningThresholds; //replaced: getConfigManager.getProperty("pruning_thresholds");
+        assert pruningThresholds != null;
+        Matcher m = Pattern.compile("\\((.*?)\\)").matcher(pruningThresholds);
+        while (m.find()) {
+            String[] pair = m.group(1).split(",");
+            Double conf = Double.parseDouble(pair[0]);
+            List<Integer> supportValues = confSuppMap.computeIfAbsent(conf, k -> new ArrayList<>());
+            supportValues.add(Integer.parseInt(pair[1]));
+            confSuppMap.put(conf, supportValues);
+        }
+
         return confSuppMap;
     }
-    
-    
+
+
     public static HashMap<Double, List<Integer>> getMinCardinalitySupportConfRange() {
         //If I tell you min confidence 90% for min count 1 then you put in count 1 when the confidence is at least 90% . Without this rule min confidence for min count 1 is 100%
         ArrayList<Integer> supportRange = new ArrayList<>(Arrays.asList(1, 50, 100, 500, 1000));
@@ -43,7 +59,7 @@ public class ExperimentsUtil {
         confSuppMap.put(0.99, supportRange);
         return confSuppMap;
     }
-    
+
     public static HashMap<Integer, String> getCsvHeader() {
         HashMap<Integer, String> header = new HashMap<>();
         header.put(1, "COUNT_NS");
@@ -53,8 +69,8 @@ public class ExperimentsUtil {
         header.put(5, "COUNT_MCC");
         return header;
     }
-    
-    
+
+
     public static HashMap<Integer, String> getAverageHeader() {
         HashMap<Integer, String> avgHeader = new HashMap<>();
         avgHeader.put(1, "AVG_PS");
@@ -63,7 +79,7 @@ public class ExperimentsUtil {
         avgHeader.put(4, "AVG_MCC");
         return avgHeader;
     }
-    
+
     public static HashMap<Integer, String> getMinHeader() {
         HashMap<Integer, String> minHeader = new HashMap<>();
         minHeader.put(1, "MIN_PS");
@@ -72,7 +88,7 @@ public class ExperimentsUtil {
         minHeader.put(4, "MIN_MCC");
         return minHeader;
     }
-    
+
     public static HashMap<Integer, String> getMaxHeader() {
         HashMap<Integer, String> maxHeader = new HashMap<>();
         maxHeader.put(1, "MAX_PS");
@@ -81,7 +97,7 @@ public class ExperimentsUtil {
         maxHeader.put(4, "MAX_MCC");
         return maxHeader;
     }
-    
+
     public static void prepareCsvForGroupedStackedBarChart(String fileAddress, String targetFileAddress, boolean skipFirstRow) {
         try {
             FileReader filereader = new FileReader(fileAddress);
@@ -89,7 +105,7 @@ public class ExperimentsUtil {
             CSVReader csvReader = new CSVReaderBuilder(filereader).withCSVParser(parser).build();
             String[] header = csvReader.readNext();
             System.out.println(Arrays.toString(header));
-            
+
             HashMap<String, Integer> indexMap = new HashMap<>();
             for (int i = 0; i < header.length; i++) {
                 if (header[i].equals("Confidence")) {
@@ -120,7 +136,7 @@ public class ExperimentsUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
     }
     
 /*    public static void main(String[] args) throws Exception {

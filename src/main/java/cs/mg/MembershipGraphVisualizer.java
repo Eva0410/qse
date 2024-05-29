@@ -1,27 +1,32 @@
-package cs.mg;
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
 
+package cs.mg;
 
 import cs.qse.common.encoders.NodeEncoder;
 import cs.qse.common.encoders.StringEncoder;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Objects;
+import org.eclipse.rdf4j.model.util.Values;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-
-import static org.eclipse.rdf4j.model.util.Values.iri;
-
 public class MembershipGraphVisualizer {
-    public MembershipGraphVisualizer() {}
+    public MembershipGraphVisualizer() {
+    }
 
     public void createIntegerNodesGraph(DefaultDirectedGraph<Integer, DefaultEdge> directedGraph) {
         Neo4jGraph neo = new Neo4jGraph();
-        directedGraph.iterables().vertices().forEach(vertex -> {
+        directedGraph.iterables().vertices().forEach((vertex) -> {
             neo.addNode(String.valueOf(vertex));
         });
-        directedGraph.iterables().edges().forEach(edge -> {
-            int source = directedGraph.getEdgeTarget(edge);
-            int target = directedGraph.getEdgeSource(edge);
+        directedGraph.iterables().edges().forEach((edge) -> {
+            int source = (Integer)directedGraph.getEdgeTarget(edge);
+            int target = (Integer)directedGraph.getEdgeSource(edge);
             neo.connectNodes(String.valueOf(source), String.valueOf(target));
         });
     }
@@ -36,48 +41,49 @@ public class MembershipGraphVisualizer {
         });
     }
 
-
     public void createEncodedIRIsNodesGraph(DefaultDirectedGraph<Integer, DefaultEdge> directedGraph, NodeEncoder encoder) {
         Neo4jGraph neo = new Neo4jGraph();
-        directedGraph.iterables().vertices().forEach(vertex -> {
+        directedGraph.iterables().vertices().forEach((vertex) -> {
             neo.addNode(encoder.decode(vertex).getLabel());
         });
-        directedGraph.iterables().edges().forEach(edge -> {
-            int source = directedGraph.getEdgeTarget(edge);
-            int target = directedGraph.getEdgeSource(edge);
+        directedGraph.iterables().edges().forEach((edge) -> {
+            int source = (Integer)directedGraph.getEdgeTarget(edge);
+            int target = (Integer)directedGraph.getEdgeSource(edge);
             neo.connectNodes(encoder.decode(source).getLabel(), encoder.decode(target).getLabel());
         });
     }
 
     public void createEncodedShortenIRIsNodesGraph(DefaultDirectedGraph<Integer, DefaultEdge> directedGraph, StringEncoder encoder) {
         Neo4jGraph neo = new Neo4jGraph();
-        directedGraph.iterables().vertices().forEach(vertex -> {
-            neo.addNode(iri(encoder.decode(vertex)).getLocalName());
+        directedGraph.iterables().vertices().forEach((vertex) -> {
+            neo.addNode(Values.iri(encoder.decode(vertex)).getLocalName());
         });
-        directedGraph.iterables().edges().forEach(edge -> {
-            int source = directedGraph.getEdgeTarget(edge);
-            int target = directedGraph.getEdgeSource(edge);
-            //neo.connectNodes(iri(encoder.decode(source).getLabel()).getLocalName(), iri(encoder.decode(target).getLabel()).getLocalName());
-            neo.connectNodes(iri(encoder.decode(target)).getLocalName(), iri(encoder.decode(source)).getLocalName());
+        directedGraph.iterables().edges().forEach((edge) -> {
+            int source = (Integer)directedGraph.getEdgeTarget(edge);
+            int target = (Integer)directedGraph.getEdgeSource(edge);
+            neo.connectNodes(Values.iri(encoder.decode(target)).getLocalName(), Values.iri(encoder.decode(source)).getLocalName());
         });
     }
 
     public void createBfsTraversedEncodedIRIsNodesGraph(DefaultDirectedGraph<Integer, DefaultEdge> directedGraph, NodeEncoder encoder, Integer hng_root) {
         Neo4jGraph neo = new Neo4jGraph();
-        directedGraph.iterables().vertices().forEach(vertex -> {
+        directedGraph.iterables().vertices().forEach((vertex) -> {
             neo.addNode(encoder.decode(vertex).getLabel());
         });
-
-        HashSet<Integer> visited = new HashSet<>();
-        LinkedList<Integer> queue = new LinkedList<Integer>();
+        HashSet<Integer> visited = new HashSet();
+        LinkedList<Integer> queue = new LinkedList();
         int node = hng_root;
         queue.add(node);
         visited.add(node);
-        while (queue.size() != 0) {
-            node = queue.poll();
+
+        while(queue.size() != 0) {
+            node = (Integer)queue.poll();
             int finalNode = node;
-            for (DefaultEdge edge : directedGraph.outgoingEdgesOf(node)) {
-                Integer child = directedGraph.getEdgeTarget(edge);
+            Iterator var9 = directedGraph.outgoingEdgesOf(node).iterator();
+
+            while(var9.hasNext()) {
+                DefaultEdge edge = (DefaultEdge)var9.next();
+                Integer child = (Integer)directedGraph.getEdgeTarget(edge);
                 if (!visited.contains(child)) {
                     neo.connectNodes(encoder.decode(finalNode).getLabel(), encoder.decode(child).getLabel());
                     queue.add(child);
@@ -85,34 +91,35 @@ public class MembershipGraphVisualizer {
                 }
             }
         }
-    }
 
+    }
 
     public void createBfsTraversedEncodedShortenIRIsNodesGraph(DefaultDirectedGraph<Integer, DefaultEdge> directedGraph, StringEncoder encoder, Integer hng_root) {
         Neo4jGraph neo = new Neo4jGraph();
-        directedGraph.iterables().vertices().forEach(vertex -> {
-            //neo.addNode(encoder.decode(vertex).getLabel());
-            neo.addNode(iri(encoder.decode(vertex)).getLocalName());
+        directedGraph.iterables().vertices().forEach((vertex) -> {
+            neo.addNode(Values.iri(encoder.decode(vertex)).getLocalName());
         });
-
-        HashSet<Integer> visited = new HashSet<>();
-        LinkedList<Integer> queue = new LinkedList<Integer>();
+        HashSet<Integer> visited = new HashSet();
+        LinkedList<Integer> queue = new LinkedList();
         int node = hng_root;
         queue.add(node);
         visited.add(node);
-        while (queue.size() != 0) {
-            node = queue.poll();
+
+        while(queue.size() != 0) {
+            node = (Integer)queue.poll();
             int finalNode = node;
-            for (DefaultEdge edge : directedGraph.outgoingEdgesOf(node)) {
-                Integer child = directedGraph.getEdgeTarget(edge);
+            Iterator var9 = directedGraph.outgoingEdgesOf(node).iterator();
+
+            while(var9.hasNext()) {
+                DefaultEdge edge = (DefaultEdge)var9.next();
+                Integer child = (Integer)directedGraph.getEdgeTarget(edge);
                 if (!visited.contains(child)) {
-                    //neo.connectNodes(encoder.decode(finalNode).getLabel(), encoder.decode(child).getLabel());
-                    neo.connectNodes(iri(encoder.decode(finalNode)).getLocalName(), iri(encoder.decode(child)).getLocalName());
+                    neo.connectNodes(Values.iri(encoder.decode(finalNode)).getLocalName(), Values.iri(encoder.decode(child)).getLocalName());
                     queue.add(child);
                     visited.add(child);
                 }
             }
         }
-    }
 
+    }
 }

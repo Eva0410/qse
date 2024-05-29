@@ -1,16 +1,16 @@
 package cs;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import cs.qse.filebased.Parser;
+import cs.qse.filebased.sampling.ReservoirSamplingParser;
 import cs.qse.querybased.nonsampling.QbParser;
 import cs.qse.querybased.sampling.QbSampling;
 import cs.qse.querybased.sampling.parallel.ParallelQbSampling;
-import cs.qse.filebased.sampling.ReservoirSamplingParser;
 import cs.utils.ConfigManager;
 import cs.utils.Constants;
 import cs.utils.FilesUtil;
 import cs.utils.Utils;
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import cs.validation.QseSHACLValidator;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +28,28 @@ public class Main {
     public static boolean qseFromSpecificClasses;
     public static String resourcesPath;
     public static String configDirPath;
-    
+    public static String graphDbUrl;
+    public static String graphDbRepository;
+    public static String pruningThresholds;
+    public static String annotateSupportConfidence;
+    public static String qse_validation_with_shNot = "false";
+
+    public static String expected_number_classes = "100";
+
     public static void main(String[] args) throws Exception {
-        configPath = args[0];
+        //configPath = args[0];
+        configPath = "C:\\Users\\evapu\\Documents\\GitHub\\QseEvolvingKg\\qse\\config.properties";
         Logger root = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
+
         qseExactExecutionWithMinimumParams();
-        //readConfig();
-        //benchmark();
-        //new PrecisionRecallComputer();
+        
+//        readConfig();
+//        //benchmark();
+//        //new PrecisionRecallComputer();
+//        String typeProperty = Constants.RDF_TYPE;
+//        ReservoirSamplingParser reservoirSamplingParser = new ReservoirSamplingParser(datasetPath, numberOfClasses, numberOfInstances, typeProperty, entitySamplingThreshold);
+//        reservoirSamplingParser.run();
     }
     
     
@@ -117,7 +130,7 @@ public class Main {
         datasetName = name;
     }
     
-    private static void qseExactExecutionWithMinimumParams() {
+    public static void qseExactExecutionWithMinimumParams() {
         datasetPath = paramVal("dataset_path");
         datasetName = FilesUtil.getFileName(datasetPath);
         numberOfClasses = Integer.parseInt(paramVal("expected_number_classes")); // expected or estimated numberOfClasses
@@ -134,8 +147,15 @@ public class Main {
         Parser parser = new Parser(datasetPath, numberOfClasses, numberOfInstances, paramVal("instance_type_property"));
         parser.run();
     }
-    
+
+    //unused
     private static boolean isActivated(String option) {return Boolean.parseBoolean(ConfigManager.getProperty(option));}
     
     private static String paramVal(String prop) {return ConfigManager.getProperty(prop);}
+    public static void setGraphDbUrlForJar(String url) { graphDbUrl = url;}
+    public static void setGraphDbRepository(String repo) {graphDbRepository = repo;}
+    public static void setPruningThresholds(String thresholds) {
+        pruningThresholds = thresholds;
+    }
+    public static void setAnnotateSupportConfidence(String value) { annotateSupportConfidence = value;}
 }
